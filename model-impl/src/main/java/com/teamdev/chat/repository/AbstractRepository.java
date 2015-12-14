@@ -22,18 +22,18 @@ public abstract class AbstractRepository<Entity extends DatabaseEntity> {
         return (List<Entity>) ChatDatabase.INSTANCE.selectTable(getTable());
     }
 
-    void save(Entity entity) {
-        if(entity.getId() == -1){ //if id not defined insert, else update
-           ChatDatabase.INSTANCE.insertIntoTable(getTable(), entity);
+    public void save(Entity entity) {
+        if (entity.getId() == -1) { //if id not defined insert, else update
+            ChatDatabase.INSTANCE.insertIntoTable(getTable(), entity);
         } else {
             ChatDatabase.INSTANCE.updateInTable(getTable(), entity, entity.getId());
         }
     }
 
-    void delete(long id) {
+    public void delete(long id) {
         throw new RuntimeException("not implemented");
     }
 
-    abstract Tables getTable();
+    protected abstract Tables getTable();
 
 }

@@ -7,7 +7,7 @@ import com.teamdev.chat.entity.ChatRoom;
 public class ChatRoomRepository extends AbstractRepository<ChatRoom> {
 
     @Override
-    Tables getTable() {
+    protected Tables getTable() {
         return Tables.CHAT_ROOMS_TABLE;
     }
 

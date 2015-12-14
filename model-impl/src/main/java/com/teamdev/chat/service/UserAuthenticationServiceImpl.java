@@ -4,13 +4,11 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.teamdev.chat.database.ChatDatabase;
 import com.teamdev.chat.entity.User;
 import com.teamdev.chat.repository.UserRepository;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
     UserRepository userRepository = new UserRepository();
@@ -25,8 +23,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         final List<User> users = userRepository.findAll();
         for(User user : users){
             if(user.getLogin().equals(login) && user.getPasswordHash().equals(passwordHash)){
-                return Long.toString(user.getId()) + "|" +
-                        passwordHash + '|' +
+                return Long.toString(user.getId()) + "-" +
+                        passwordHash + '-' +
                         Long.toString(Instant.now().getEpochSecond() + 300);
             }
         }
@@ -35,7 +33,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     public long checkUserLogged(String token) {
 
-        final List<String> strings = Splitter.on("|").splitToList(token);
+        final List<String> strings = Splitter.on("-").splitToList(token);
         if(strings.size() < 3){
             return -1;
         }
