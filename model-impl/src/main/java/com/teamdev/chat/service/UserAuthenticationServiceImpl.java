@@ -18,7 +18,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     public String login(String login, String password) {
-        HashFunction hf = Hashing.md5();
+        HashFunction hf = Hashing.sha256();
         final String passwordHash = hf.newHasher().putString(password, Charsets.UTF_8).hash().toString();
         final List<User> users = userRepository.findAll();
         for(User user : users){
