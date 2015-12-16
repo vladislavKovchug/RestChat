@@ -7,4 +7,6 @@ public interface DatabaseEntity {
 
     void setId(long id);
 
+    void removeDependencies();
+
 }

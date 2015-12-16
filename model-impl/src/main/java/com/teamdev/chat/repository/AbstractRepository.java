@@ -30,8 +30,9 @@ public abstract class AbstractRepository<Entity extends DatabaseEntity> {
         }
     }
 
-    public void delete(long id) {
-        throw new RuntimeException("not implemented");
+    public void delete(Entity entity) {
+        ChatDatabase.INSTANCE.deleteFromTable(getTable(), entity.getId());
+        entity.removeDependencies();
     }
 
     protected abstract Tables getTable();

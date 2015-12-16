@@ -5,9 +5,9 @@ import java.util.Date;
 
 public class Message implements DatabaseEntity {
     private long id;
-    private long userFromId;
-    private long userToId;
-    private long chatRoomId;
+    private User userFrom;
+    private User userTo;
+    private ChatRoom chatRoom;
     private Date date;
     private String message;
 
@@ -15,11 +15,9 @@ public class Message implements DatabaseEntity {
         this.id = -1;
     }
 
-    public Message(long userFromId, long userToId, long chatRoomId, Date date, String message) {
+    public Message(User userFrom, Date date, String message) {
         this.id = -1;
-        this.userFromId = userFromId;
-        this.userToId = userToId;
-        this.chatRoomId = chatRoomId;
+        this.userFrom = userFrom;
         this.date = date;
         this.message = message;
     }
@@ -34,28 +32,36 @@ public class Message implements DatabaseEntity {
         this.id = id;
     }
 
-    public long getUserFromId() {
-        return userFromId;
+    public User getUserFrom() {
+        return userFrom;
     }
 
-    public void setUserFromId(long userFromId) {
-        this.userFromId = userFromId;
+    public User getUserTo() {
+        return userTo;
     }
 
-    public long getUserToId() {
-        return userToId;
+    public void setUserTo(User userTo) {
+        if(this.userTo != null && !this.userTo.equals(userTo)){ // if user changed
+            this.userTo.removeMessage(this);
+        }
+        this.userTo = userTo;
+        if(userTo != null){
+            this.userTo.addMessage(this);
+        }
     }
 
-    public void setUserToId(long userToId) {
-        this.userToId = userToId;
+    public ChatRoom getChatRoom() {
+        return chatRoom;
     }
 
-    public long getChatRoomId() {
-        return chatRoomId;
-    }
-
-    public void setChatRoomId(long chatRoomId) {
-        this.chatRoomId = chatRoomId;
+    public void setChatRoom(ChatRoom chatRoom) {
+        if(this.chatRoom != null && !this.chatRoom.equals(chatRoom)){ //if chatroom changed
+            this.chatRoom.removeMessage(this);
+        }
+        this.chatRoom = chatRoom;
+        if(chatRoom != null){
+            this.chatRoom.addMessage(this);
+        }
     }
 
     public Date getDate() {
@@ -75,16 +81,23 @@ public class Message implements DatabaseEntity {
     }
 
     @Override
+    public void removeDependencies() {
+        if(chatRoom != null){
+            chatRoom.removeMessage(this);
+        }
+        if(userTo != null){
+            userTo.removeMessage(this);
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Message)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Message message1 = (Message) o;
 
         if (id != message1.id) return false;
-        if (userFromId != message1.userFromId) return false;
-        if (userToId != message1.userToId) return false;
-        if (chatRoomId != message1.chatRoomId) return false;
         if (date != null ? !date.equals(message1.date) : message1.date != null) return false;
         return !(message != null ? !message.equals(message1.message) : message1.message != null);
 

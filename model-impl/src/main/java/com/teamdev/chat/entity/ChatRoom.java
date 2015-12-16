@@ -1,9 +1,14 @@
 package com.teamdev.chat.entity;
 
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 public class ChatRoom implements DatabaseEntity {
     private long id;
     private String name;
+    private Set<User> users = new LinkedHashSet<>();
+    private Set<Message> messages = new LinkedHashSet<>();
 
     public ChatRoom() {
         this.id = -1;
@@ -30,6 +35,48 @@ public class ChatRoom implements DatabaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void addUser(User user){
+        if(users.add(user)){
+            user.addChatRoom(this);
+        }
+    }
+
+    public void removeUser(User user){
+        if (users.remove(user)) {
+            user.removeChatRoom(this);
+        }
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void addMessage(Message message){
+        if(messages.add(message)){
+            message.setChatRoom(this);
+        }
+    }
+
+    public void removeMessage(Message message){
+        if(messages.remove(message)){
+            message.setChatRoom(null);
+        }
+    }
+
+    @Override
+    public void removeDependencies() {
+        for(Message message : new LinkedHashSet<>(messages)){
+            message.setUserTo(null);
+        }
+        for(User user: new LinkedHashSet<>(users)){
+            user.removeChatRoom(this);
+        }
     }
 
     @Override

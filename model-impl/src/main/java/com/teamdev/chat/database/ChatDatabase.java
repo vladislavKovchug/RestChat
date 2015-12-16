@@ -31,21 +31,38 @@ public enum ChatDatabase {
 
     public void updateInTable(Tables table, DatabaseEntity line, long id){
         int index = 0;
-        if(database.containsKey(table)){
-            for(DatabaseEntity entity: database.get(table)){
-                if(entity.getId() == id){
-                    database.get(table).set(index, line);
-                    break;
-                }
-                index++;
+        if(!database.containsKey(table)){
+            throw new RuntimeException("Error on UPDATE. No entity with id=" + Long.toString(id) + " was found.");
+        }
+
+        for(DatabaseEntity entity: database.get(table)){
+            if(entity.getId() == id){
+                database.get(table).set(index, line);
+                break;
+            }
+            index++;
+        }
+
+    }
+
+    public void deleteFromTable(Tables table, long id){
+        if(!database.containsKey(table)){
+            throw new RuntimeException("Error on DELETE. No entity with id=" + Long.toString(id) + " was found.");
+        }
+
+        for(DatabaseEntity entity: database.get(table)){
+            if(entity.getId() == id){
+                database.get(table).remove(entity);
+                break;
             }
         }
     }
 
     private void createTable(Tables table) {
-        if(!database.containsKey(table)){
-            database.put(table, new ArrayList<DatabaseEntity>());
+        if(database.containsKey(table)){
+            throw new RuntimeException("Table " + table.name() + "already exists");
         }
+        database.put(table, new ArrayList<DatabaseEntity>());
     }
 
     ChatDatabase() {
@@ -53,12 +70,12 @@ public enum ChatDatabase {
         createTable(Tables.CHAT_ROOMS_TABLE);
         createTable(Tables.MESSAGES_TABLE);
 
-        HashFunction hf = Hashing.md5();
+        HashFunction hf = Hashing.sha256();
 
         insertIntoTable(Tables.USERS_TABLE, new User("user1",
-                hf.newHasher().putString("12345", Charsets.UTF_8).hash().toString(), 20, new Date(), -1));
+                hf.newHasher().putString("12345", Charsets.UTF_8).hash().toString(), 20, new Date()));
         insertIntoTable(Tables.USERS_TABLE, new User("user2",
-                hf.newHasher().putString("big_password123", Charsets.UTF_8).hash().toString(), 20, new Date(), -1));
+                hf.newHasher().putString("big_password123", Charsets.UTF_8).hash().toString(), 20, new Date()));
 
         insertIntoTable(Tables.CHAT_ROOMS_TABLE, new ChatRoom("chat"));
     }

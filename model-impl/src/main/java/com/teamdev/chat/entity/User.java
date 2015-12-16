@@ -2,6 +2,8 @@ package com.teamdev.chat.entity;
 
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class User implements DatabaseEntity {
     private long id;
@@ -9,19 +11,19 @@ public class User implements DatabaseEntity {
     private String passwordHash;
     private long age;
     private Date birthday;
-    private long chatRoomId;
+    private Set<ChatRoom> chatRooms = new LinkedHashSet<>();
+    private Set<Message> messages = new LinkedHashSet<>();
 
     public User() {
         this.id = -1;
     }
 
-    public User(String login, String passwordHash, long age, Date birthday, long chatRoomId) {
+    public User(String login, String passwordHash, long age, Date birthday) {
         this.id = -1;
         this.login = login;
         this.passwordHash = passwordHash;
         this.age = age;
         this.birthday = birthday;
-        this.chatRoomId = chatRoomId;
     }
 
     @Override
@@ -66,12 +68,47 @@ public class User implements DatabaseEntity {
         this.birthday = birthday;
     }
 
-    public long getChatRoomId() {
-        return chatRoomId;
+    public Set<ChatRoom> getChatRooms() {
+        return chatRooms;
     }
 
-    public void setChatRoomId(long chatRoomId) {
-        this.chatRoomId = chatRoomId;
+    public void addChatRoom(ChatRoom chatRoom){
+        if(chatRooms.add(chatRoom)){
+            chatRoom.addUser(this);
+        }
+
+    }
+
+    public void removeChatRoom(ChatRoom chatRoom){
+        if(chatRooms.remove(chatRoom)){
+            chatRoom.removeUser(this);
+        }
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void addMessage(Message message){
+        if (messages.add(message)) {
+            message.setUserTo(this);
+        }
+    }
+
+    public void removeMessage(Message message){
+        if(messages.remove(message)){
+            message.setUserTo(null);
+        }
+    }
+
+    @Override
+    public void removeDependencies() {
+        for(Message message : new LinkedHashSet<>(messages)){
+            message.setUserTo(null);
+        }
+        for(ChatRoom chatRoom : new LinkedHashSet<>(chatRooms)){
+            chatRoom.removeUser(this);
+        }
     }
 
     @Override
