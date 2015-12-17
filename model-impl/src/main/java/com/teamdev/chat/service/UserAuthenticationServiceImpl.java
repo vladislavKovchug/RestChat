@@ -23,7 +23,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             if (user.getLogin().equals(login) && user.getPasswordHash().equals(passwordHash)) {
                 return Long.toString(user.getId()) + "-" +
                         passwordHash + '-' +
-                        Long.toString(Instant.now().getEpochSecond() + 300);
+                        Long.toString(Instant.now().getEpochSecond() + 60*15);
             }
         }
         throw new AccessControlException("Access denied.");

@@ -21,9 +21,9 @@ import static org.junit.Assert.fail;
 
 public class ChatRoomServiceTest {
 
-    RegisterUserDTO registerUserDTO = new RegisterUserDTO("ivan", "123456", 123, new Date(1700, 10, 10));
-    UserProfileDTO testUser;
-    String testUserToken = "";
+    private RegisterUserDTO registerUserDTO = new RegisterUserDTO("ivan", "123456", 123, new Date(1700, 10, 10));
+    private UserProfileDTO testUser;
+    private String testUserToken = "";
 
     private String RegisterAndLoginAsTestUser() {
         ServiceFactory.getUserManagementService().register(registerUserDTO);
@@ -36,9 +36,8 @@ public class ChatRoomServiceTest {
     private ChatRoomDTO readLastChatRoom(String token) {
         final Iterable<ChatRoomDTO> chatRoomDTOs = ServiceFactory.getChatRoomService().readAllChatRooms(token);
         ChatRoomDTO lastChatRoom = null;
-        final Iterator<ChatRoomDTO> iterator = chatRoomDTOs.iterator();
-        while (iterator.hasNext()) {
-            lastChatRoom = iterator.next();
+        for (ChatRoomDTO chatRoomDTO : chatRoomDTOs) {
+            lastChatRoom = chatRoomDTO;
         }
         return lastChatRoom;
     }
