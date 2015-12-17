@@ -3,7 +3,7 @@ package com.teamdev.chat.dto;
 
 import java.util.Date;
 
-public class RegisterUserDTO{
+public class RegisterUserDTO {
     public final String login;
     public final String password;
     public final long age;

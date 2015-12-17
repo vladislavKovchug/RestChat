@@ -2,7 +2,7 @@ package com.teamdev.chat.dto;
 
 import java.util.Date;
 
-public class MessageDTO{
+public class MessageDTO {
     final Long fromUserId;
     final String fromUserName;
     final String message;

@@ -1,13 +1,11 @@
 package com.teamdev.chat.service;
 
 import com.teamdev.chat.dto.MessageDTO;
+import com.teamdev.chat.entity.ChatRoom;
 import com.teamdev.chat.entity.Message;
 import com.teamdev.chat.entity.User;
-import com.teamdev.chat.repository.ChatRoomRepository;
-import com.teamdev.chat.repository.MessageRepository;
-import com.teamdev.chat.repository.UserRepository;
+import com.teamdev.chat.repository.*;
 
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -15,20 +13,17 @@ public class MessageServiceImpl implements MessageService {
 
     UserAuthenticationService userAuthenticationService = new UserAuthenticationServiceImpl();
 
-    ChatRoomRepository chatRoomRepository = new ChatRoomRepository();
+    ChatRoomRepository chatRoomRepository = new ChatRoomRepositoryImpl();
 
-    MessageRepository messageRepository = new MessageRepository();
+    MessageRepository messageRepository = new MessageRepositoryImpl();
 
-    UserRepository userRepository = new UserRepository();
+    UserRepository userRepository = new UserRepositoryImpl();
 
     @Override
-    public Iterable<MessageDTO> getChatRoomMessages(String token, long chatRoomId, long time) {
+    public Iterable<MessageDTO> readChatRoomMessages(String token, long chatRoomId, long time) {
         final long userId = userAuthenticationService.checkUserLogged(token);
-        if (userId == -1) {
-            throw new AccessControlException("Access denied.");
-        }
         if (chatRoomRepository.findOne(chatRoomId) == null) {
-            return new ArrayList<>();
+            throw new RuntimeException("Error with getting chat room messages. Chat room with id " + Long.toString(chatRoomId) + " not found.");
         }
 
         if (time == -1) {
@@ -40,9 +35,7 @@ public class MessageServiceImpl implements MessageService {
         final ArrayList<MessageDTO> messageDTOs = new ArrayList<>();
         for (Message message : allUserMessagesAfter) {
 
-            final User userFrom = userRepository.findOne(message.getUserFromId());
-
-            messageDTOs.add(new MessageDTO(message.getUserFromId(), userFrom != null ? userFrom.getLogin() : "",
+            messageDTOs.add(new MessageDTO(message.getUserFrom().getId(), message.getUserFrom().getLogin(),
                     message.getMessage(), false, message.getDate()));
         }
 
@@ -51,23 +44,31 @@ public class MessageServiceImpl implements MessageService {
 
 
     @Override
-    public boolean sendMessage(String token, long chatRoomId, String message) {
+    public void sendMessage(String token, long chatRoomId, String messageText) {
         final long userId = userAuthenticationService.checkUserLogged(token);
-        if (userId == -1) {
-            throw new AccessControlException("Access denied.");
+        final ChatRoom chatRoom = chatRoomRepository.findOne(chatRoomId);
+        if (chatRoom == null) {
+            throw new RuntimeException("No chat room with id " + Long.toString(chatRoomId) + " found.");
         }
-        if (chatRoomRepository.findOne(chatRoomId) == null) {
-            return false;
-        }
-
-        messageRepository.save(new Message(userId, -1, chatRoomId, new Date(), message));
-
-        return true;
+        final User user = userRepository.findOne(userId);
+        final Message message = new Message(user, new Date(), messageText);
+        message.setChatRoom(chatRoom);
+        messageRepository.save(message);
     }
 
     @Override
-    public boolean sendPrivateMessage(String token, long chatRoomId, long userId) {
-        throw new RuntimeException("not implemented");
+    public void sendPrivateMessage(String token, long chatRoomId, String messageText, long receiverUserId) {
+        final long userFromId = userAuthenticationService.checkUserLogged(token);
+        final ChatRoom chatRoom = chatRoomRepository.findOne(chatRoomId);
+        if (chatRoom == null) {
+            throw new RuntimeException("No chat room with id " + Long.toString(chatRoomId) + " found.");
+        }
+        final User userFrom = userRepository.findOne(userFromId);
+        final User userTo = userRepository.findOne(receiverUserId);
+        final Message message = new Message(userFrom, new Date(), messageText);
+        message.setChatRoom(chatRoom);
+        message.setUserTo(userTo);
+        messageRepository.save(message);
     }
 
 }

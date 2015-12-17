@@ -7,6 +7,9 @@ import java.util.Date;
 
 public interface UserService {
 
-    UserProfileDTO getUserProfile(long user);
+    UserProfileDTO readUserProfile(String token, long userId);
+
+    Iterable<UserProfileDTO> readAllUsersProfile(String token);
+
 
 }

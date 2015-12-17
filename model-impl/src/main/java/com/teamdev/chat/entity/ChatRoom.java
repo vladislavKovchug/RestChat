@@ -41,13 +41,13 @@ public class ChatRoom implements DatabaseEntity {
         return users;
     }
 
-    public void addUser(User user){
-        if(users.add(user)){
+    public void addUser(User user) {
+        if (users.add(user)) {
             user.addChatRoom(this);
         }
     }
 
-    public void removeUser(User user){
+    public void removeUser(User user) {
         if (users.remove(user)) {
             user.removeChatRoom(this);
         }
@@ -57,24 +57,24 @@ public class ChatRoom implements DatabaseEntity {
         return messages;
     }
 
-    public void addMessage(Message message){
-        if(messages.add(message)){
+    public void addMessage(Message message) {
+        if (messages.add(message)) {
             message.setChatRoom(this);
         }
     }
 
-    public void removeMessage(Message message){
-        if(messages.remove(message)){
+    public void removeMessage(Message message) {
+        if (messages.remove(message)) {
             message.setChatRoom(null);
         }
     }
 
     @Override
     public void removeDependencies() {
-        for(Message message : new LinkedHashSet<>(messages)){
+        for (Message message : new LinkedHashSet<>(messages)) {
             message.setUserTo(null);
         }
-        for(User user: new LinkedHashSet<>(users)){
+        for (User user : new LinkedHashSet<>(users)) {
             user.removeChatRoom(this);
         }
     }

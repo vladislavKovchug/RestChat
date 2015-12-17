@@ -3,7 +3,7 @@ package com.teamdev.chat.dto;
 import java.util.Date;
 
 
-public class UserProfileDTO{
+public class UserProfileDTO {
     final Long id;
     final String name;
     final Long age;

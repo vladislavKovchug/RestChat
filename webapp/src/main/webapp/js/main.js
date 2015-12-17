@@ -93,7 +93,7 @@ $(function(){
         });
 
         if(!normalCall){
-            window.setTimeout(getMessages, 3000);
+            window.setTimeout(getMessages, 1000);
         }
     }
 

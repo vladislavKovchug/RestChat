@@ -41,11 +41,11 @@ public class Message implements DatabaseEntity {
     }
 
     public void setUserTo(User userTo) {
-        if(this.userTo != null && !this.userTo.equals(userTo)){ // if user changed
+        if (this.userTo != null && !this.userTo.equals(userTo)) { // if user changed
             this.userTo.removeMessage(this);
         }
         this.userTo = userTo;
-        if(userTo != null){
+        if (userTo != null) {
             this.userTo.addMessage(this);
         }
     }
@@ -55,11 +55,11 @@ public class Message implements DatabaseEntity {
     }
 
     public void setChatRoom(ChatRoom chatRoom) {
-        if(this.chatRoom != null && !this.chatRoom.equals(chatRoom)){ //if chatroom changed
+        if (this.chatRoom != null && !this.chatRoom.equals(chatRoom)) { //if chatroom changed
             this.chatRoom.removeMessage(this);
         }
         this.chatRoom = chatRoom;
-        if(chatRoom != null){
+        if (chatRoom != null) {
             this.chatRoom.addMessage(this);
         }
     }
@@ -82,10 +82,10 @@ public class Message implements DatabaseEntity {
 
     @Override
     public void removeDependencies() {
-        if(chatRoom != null){
+        if (chatRoom != null) {
             chatRoom.removeMessage(this);
         }
-        if(userTo != null){
+        if (userTo != null) {
             userTo.removeMessage(this);
         }
     }

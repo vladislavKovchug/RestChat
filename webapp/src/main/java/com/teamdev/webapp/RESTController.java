@@ -30,7 +30,7 @@ public class RESTController {
 
     @Path("login")
     @POST
-    @Consumes( { MediaType.APPLICATION_FORM_URLENCODED })
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String login(MultivaluedMap<String, String> formData) {
         String login = formData.get("login").size() > 0 ? formData.get("login").get(0) : "";
         String password = formData.get("password").size() > 0 ? formData.get("password").get(0) : "";
@@ -45,43 +45,43 @@ public class RESTController {
     @GET
     public String getChatRooms(@HeaderParam("Login-token") String token) {
         final Gson gson = new Gson();
-        final Iterable<ChatRoomDTO> chatRooms = chatRoomService.getChatRooms(token);
+        final Iterable<ChatRoomDTO> chatRooms = chatRoomService.readAllChatRooms(token);
 
         return gson.toJson(chatRooms);
     }
 
     @Path("join")
     @POST
-    @Consumes( { MediaType.APPLICATION_FORM_URLENCODED })
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String joinChatRoom(MultivaluedMap<String, String> formData, @HeaderParam("Login-token") String token) {
         final long chatRoomId = Long.parseLong(formData.get("id").size() > 0 ? formData.get("id").get(0) : "-1");
-        final boolean result = chatRoomService.joinChatRoom(token, chatRoomId);
-        return result ? "success" : "fail";
+        chatRoomService.joinChatRoom(token, chatRoomId);
+        return "success";
     }
 
     @GET
     @Path("get-messages/{chatRoom}/{time}")
     public String getMessages(@HeaderParam("Login-token") String token, @PathParam("chatRoom") long chatRoom, @PathParam("time") long time) {
         final Gson gson = new Gson();
-        final Iterable<MessageDTO> chatRoomMessages = messageService.getChatRoomMessages(token, chatRoom, time);
+        final Iterable<MessageDTO> chatRoomMessages = messageService.readChatRoomMessages(token, chatRoom, time);
 
         return gson.toJson(chatRoomMessages);
     }
 
     @Path("send-message")
     @POST
-    @Consumes( { MediaType.APPLICATION_FORM_URLENCODED })
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String sendMessage(MultivaluedMap<String, String> formData, @HeaderParam("Login-token") String token) {
         final long chatRoomId = Long.parseLong(formData.get("chatRoomId").size() > 0 ? formData.get("chatRoomId").get(0) : "-1");
         String message = formData.get("message").size() > 0 ? formData.get("message").get(0) : "";
 
-        final boolean result = messageService.sendMessage(token, chatRoomId, message);
-        return result ? "success" : "fail";
+        messageService.sendMessage(token, chatRoomId, message);
+        return "success";
     }
 
-    @Path("send-message")
+    @Path("register")
     @POST
-    @Consumes( { MediaType.APPLICATION_FORM_URLENCODED })
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String registerUser(MultivaluedMap<String, String> formData) {
         //new
         String login = formData.get("login").size() > 0 ? formData.get("login").get(0) : "";
