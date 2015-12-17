@@ -6,8 +6,6 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.teamdev.chat.entity.User;
 import com.teamdev.chat.factory.RepositoryFactory;
-import com.teamdev.chat.repository.UserRepository;
-import com.teamdev.chat.repository.UserRepositoryImpl;
 
 import java.security.AccessControlException;
 import java.time.Instant;
@@ -29,7 +27,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         throw new AccessControlException("Access denied.");
     }
 
-    public long checkUserLogged(String token) {
+    public long readCurrentUserId(String token) {
 
         final List<String> strings = Splitter.on("-").splitToList(token);
         if (strings.size() < 3) {

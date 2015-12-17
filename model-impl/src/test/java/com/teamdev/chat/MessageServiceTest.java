@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -69,9 +68,9 @@ public class MessageServiceTest {
         final MessageDTO lastMessage = readLastMessage(testUserToken);
         ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, chatRoom.id);
 
-        assertEquals("last message should be from Test user", lastMessage.fromUserId, testUser.id);
-        assertEquals("last message should be from Test user", lastMessage.fromUserName, testUser.name);
-        assertEquals("message text should be equals", lastMessage.message, "test message");
+        assertEquals("last message should be from Test user", testUser.id, lastMessage.fromUserId);
+        assertEquals("last message should be from Test user", testUser.name, lastMessage.fromUserName);
+        assertEquals("message text should be equals", "test message", lastMessage.message);
     }
 
     @Test
@@ -80,8 +79,8 @@ public class MessageServiceTest {
             ServiceFactory.getMessageService().sendMessage(testUserToken, 666, "test message");
             fail("Exception should be thrown.");
         } catch (Exception e) {
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "No chat room with id 666 found.");
+            assertEquals("Not correct Exception message.", "No chat room with id 666 found.",
+                    e.getMessage());
         }
     }
 
@@ -91,26 +90,50 @@ public class MessageServiceTest {
             ServiceFactory.getMessageService().sendMessage(testUserToken, chatRoom.id, "test message");
             fail("Exception should be thrown.");
         } catch (Exception e) {
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error send message to not joined chat room.");
+            assertEquals("Not correct Exception message.", "Error send message to not joined chat room.",
+                    e.getMessage());
         }
     }
 
     @Test
-    public void testPostingPrivateMessages(){
-        ServiceFactory.getChatRoomService().joinChatRoom(testUserToken, chatRoom.id);
+    public void testPostingPrivateMessage(){
+        ServiceFactory.getUserManagementService().register(new RegisterUserDTO("ivan2", "1", 1, new Date()));
+        final String receiverUserToken = ServiceFactory.getUserAuthenticationService().login("ivan2", "1");
+        UserProfileDTO receiverUser = ServiceFactory.getUserService().readCurrentUserProfile(receiverUserToken);
 
+
+        ServiceFactory.getChatRoomService().joinChatRoom(testUserToken, chatRoom.id);
+        ServiceFactory.getChatRoomService().joinChatRoom(receiverUserToken, chatRoom.id);
         ServiceFactory.getMessageService().sendPrivateMessage(testUserToken, chatRoom.id,
-                "test private message", 1);
+                "test private message", receiverUser.id);
         final MessageDTO lastMessage = readLastMessage(testUserToken);
         ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, chatRoom.id);
+        ServiceFactory.getChatRoomService().leaveChatRoom(receiverUserToken, chatRoom.id);
 
-        assertEquals("last message should be from Test user", lastMessage.fromUserId, testUser.id);
-        assertEquals("last message should be from Test user", lastMessage.fromUserName, testUser.name);
-        assertEquals("last message should be To user with id 1", lastMessage.toUserId, new Long(1));
-        assertEquals("last message should be private", lastMessage.privateMessage, true);
-        assertEquals("last message should be from Test user", lastMessage.fromUserName, testUser.name);
-        assertEquals("message text should be equals", lastMessage.message, "test private message");
+        assertEquals("last message should be from Test user", testUser.id, lastMessage.fromUserId);
+        assertEquals("last message should be from Test user", testUser.name, lastMessage.fromUserName);
+        assertEquals("last message should be To user with id " + Long.toString(receiverUser.id), receiverUser.id,
+                lastMessage.toUserId);
+        assertEquals("last message should be To user with name " + receiverUser.name, receiverUser.name,
+                lastMessage.toUserName);
+        assertEquals("last message should be private", true, lastMessage.privateMessage);
+        assertEquals("last message should be from Test user", testUser.name, lastMessage.fromUserName);
+        assertEquals("message text should be equals", "test private message", lastMessage.message);
+    }
+
+    @Test
+    public void testFailPostingPrivateMessageToUserNotInChatRoom(){
+        try{
+            ServiceFactory.getChatRoomService().joinChatRoom(testUserToken, chatRoom.id);
+            ServiceFactory.getMessageService().sendPrivateMessage(testUserToken, chatRoom.id,
+                    "test private message", 1);
+            ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, chatRoom.id);
+            fail("Exception should be thrown.");
+        } catch (Exception e){
+            ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, chatRoom.id);
+            assertEquals("Not correct Exception message.", "Error send message to user that not joined chat room.",
+                    e.getMessage());
+        }
     }
 
 }

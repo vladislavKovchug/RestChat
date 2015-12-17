@@ -6,10 +6,6 @@ import com.teamdev.chat.entity.ChatRoom;
 import com.teamdev.chat.entity.User;
 import com.teamdev.chat.factory.RepositoryFactory;
 import com.teamdev.chat.factory.ServiceFactory;
-import com.teamdev.chat.repository.ChatRoomRepository;
-import com.teamdev.chat.repository.ChatRoomRepositoryImpl;
-import com.teamdev.chat.repository.UserRepository;
-import com.teamdev.chat.repository.UserRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +16,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public Iterable<ChatRoomDTO> readAllChatRooms(String token) {
-        ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
+        ServiceFactory.getUserAuthenticationService().readCurrentUserId(token);
 
         final List<ChatRoom> chatRooms = RepositoryFactory.getChatRoomRepository().findAll();
         List<ChatRoomDTO> result = new ArrayList<>();
@@ -32,7 +28,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public void addChatRoom(String token, String chatRoomName) {
-        ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
+        ServiceFactory.getUserAuthenticationService().readCurrentUserId(token);
         if(RepositoryFactory.getChatRoomRepository().findChatRoomByName(chatRoomName) != null){
             throw new RuntimeException("Error with create chat room. Chat room with name " + chatRoomName +
                     " already exists.");
@@ -42,7 +38,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public void joinChatRoom(String token, long chatRoomId) {
-        final long userId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
+        final long userId = ServiceFactory.getUserAuthenticationService().readCurrentUserId(token);
         final ChatRoom chatRoom = RepositoryFactory.getChatRoomRepository().findOne(chatRoomId);
         if (chatRoom == null) {
             throw new RuntimeException("Error with join chat room. Chat room with id " + Long.toString(chatRoomId) +
@@ -60,7 +56,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public void leaveChatRoom(String token, long chatRoomId) {
-        final long userId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
+        final long userId = ServiceFactory.getUserAuthenticationService().readCurrentUserId(token);
         final ChatRoom chatRoom = RepositoryFactory.getChatRoomRepository().findOne(chatRoomId);
         if (chatRoom == null) {
             throw new RuntimeException("Error with leave chat room. Chat room with id " + Long.toString(chatRoomId) +
@@ -77,7 +73,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public Iterable<UserProfileDTO> readChatRoomUsersList(String token, long chatRoomId) {
-        final long userId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
+        final long userId = ServiceFactory.getUserAuthenticationService().readCurrentUserId(token);
         final ChatRoom chatRoom = RepositoryFactory.getChatRoomRepository().findOne(chatRoomId);
         if (chatRoom == null) {
             throw new RuntimeException("Error with read chat room users. Chat room with id " + Long.toString(chatRoomId) +

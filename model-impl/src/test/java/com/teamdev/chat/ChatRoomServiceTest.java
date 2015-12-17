@@ -1,9 +1,6 @@
 package com.teamdev.chat;
 
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.teamdev.chat.dto.ChatRoomDTO;
 import com.teamdev.chat.dto.RegisterUserDTO;
 import com.teamdev.chat.dto.UserProfileDTO;
@@ -13,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -73,8 +68,9 @@ public class ChatRoomServiceTest {
             ServiceFactory.getChatRoomService().addChatRoom(testUserToken, "existing_chat_room");
             fail("Exception should be thrown.");
         } catch (RuntimeException e) {
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error with create chat room. Chat room with name existing_chat_room already exists.");
+            assertEquals("Not correct Exception message.",
+                    "Error with create chat room. Chat room with name existing_chat_room already exists.",
+                    e.getMessage());
         }
     }
 
@@ -100,8 +96,8 @@ public class ChatRoomServiceTest {
             ServiceFactory.getChatRoomService().joinChatRoom(testUserToken, 666);
             fail("Exception should be thrown.");
         } catch (Exception e){
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error with join chat room. Chat room with id 666 not found.");
+            assertEquals("Not correct Exception message.", "Error with join chat room. Chat room with id 666 not found.",
+                    e.getMessage());
         }
     }
 
@@ -114,8 +110,8 @@ public class ChatRoomServiceTest {
             ServiceFactory.getChatRoomService().joinChatRoom(testUserToken, chatRoom.id);
             fail("Exception should be thrown.");
         } catch (Exception e){
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error with join chat room. User is already in current chat room.");
+            assertEquals("Not correct Exception message.", "Error with join chat room. User is already in current chat room.",
+                    e.getMessage());
         }
     }
 
@@ -130,7 +126,7 @@ public class ChatRoomServiceTest {
                 ServiceFactory.getChatRoomService().readChatRoomUsersList(testUserToken, lastChatRoom.id);
 
         for(UserProfileDTO userProfile : userProfileDTOs){
-            if(userProfile.id.equals(testUser.id)){
+            if(userProfile.id == testUser.id){
                 fail("Found user in leaved chat room.");
             }
         }
@@ -142,8 +138,8 @@ public class ChatRoomServiceTest {
             ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, 666);
             fail("Exception should be thrown.");
         } catch (Exception e){
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error with leave chat room. Chat room with id 666 not found.");
+            assertEquals("Not correct Exception message.", "Error with leave chat room. Chat room with id 666 not found.",
+                    e.getMessage());
         }
     }
 
@@ -156,8 +152,8 @@ public class ChatRoomServiceTest {
             ServiceFactory.getChatRoomService().leaveChatRoom(testUserToken, lastChatRoom.id);
             fail("Exception should be thrown.");
         } catch (Exception e){
-            assertEquals("Not correct Exception message.", e.getMessage(),
-                    "Error with leave chat room. User is not in chat room.");
+            assertEquals("Not correct Exception message.", "Error with leave chat room. User is not in chat room.",
+                    e.getMessage());
         }
     }
 

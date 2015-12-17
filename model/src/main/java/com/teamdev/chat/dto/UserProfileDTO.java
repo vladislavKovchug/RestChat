@@ -4,12 +4,12 @@ import java.util.Date;
 
 
 public class UserProfileDTO {
-    public final Long id;
+    public final long id;
     public final String name;
-    public final Long age;
+    public final long age;
     private final Date birthday;
 
-    public UserProfileDTO(Long id, String name, Long age, Date birthday) {
+    public UserProfileDTO(long id, String name, long age, Date birthday) {
         this.id = id;
         this.name = name;
         this.age = age;
