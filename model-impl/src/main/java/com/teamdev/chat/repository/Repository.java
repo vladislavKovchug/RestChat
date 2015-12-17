@@ -7,11 +7,11 @@ import com.teamdev.chat.entity.DatabaseEntity;
 import java.util.List;
 
 public interface Repository<Entity extends DatabaseEntity> {
-    public Entity findOne(long id);
+    Entity findOne(long id);
 
-    public List<Entity> findAll();
+    List<Entity> findAll();
 
-    public void save(Entity entity);
+    void save(Entity entity);
 
-    public void delete(Entity entity);
+    void delete(Entity entity);
 }

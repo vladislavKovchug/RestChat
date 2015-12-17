@@ -7,7 +7,7 @@ public class RegisterUserDTO {
     public final String login;
     public final String password;
     public final long age;
-    public final Date birthday;
+    private final Date birthday;
 
     public RegisterUserDTO(String login, String password, long age, Date birthday) {
         this.login = login;

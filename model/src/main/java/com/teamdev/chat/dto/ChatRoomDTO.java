@@ -1,8 +1,8 @@
 package com.teamdev.chat.dto;
 
 public class ChatRoomDTO{
-    final Long id;
-    final String name;
+    public final Long id;
+    public final String name;
 
     public ChatRoomDTO(Long id, String name) {
         this.id = id;

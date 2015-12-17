@@ -4,6 +4,8 @@ import com.teamdev.chat.dto.MessageDTO;
 import com.teamdev.chat.entity.ChatRoom;
 import com.teamdev.chat.entity.Message;
 import com.teamdev.chat.entity.User;
+import com.teamdev.chat.factory.RepositoryFactory;
+import com.teamdev.chat.factory.ServiceFactory;
 import com.teamdev.chat.repository.*;
 
 import java.util.ArrayList;
@@ -11,17 +13,16 @@ import java.util.Date;
 
 public class MessageServiceImpl implements MessageService {
 
-    UserAuthenticationService userAuthenticationService = new UserAuthenticationServiceImpl();
 
-    ChatRoomRepository chatRoomRepository = new ChatRoomRepositoryImpl();
+    ChatRoomRepository chatRoomRepository = RepositoryFactory.getChatRoomRepository();
 
-    MessageRepository messageRepository = new MessageRepositoryImpl();
+    MessageRepository messageRepository = RepositoryFactory.getMessageRepository();
 
-    UserRepository userRepository = new UserRepositoryImpl();
+    UserRepository userRepository = RepositoryFactory.getUserRepository();
 
     @Override
     public Iterable<MessageDTO> readChatRoomMessages(String token, long chatRoomId, long time) {
-        final long userId = userAuthenticationService.checkUserLogged(token);
+        final long userId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
         if (chatRoomRepository.findOne(chatRoomId) == null) {
             throw new RuntimeException("Error with getting chat room messages. Chat room with id " + Long.toString(chatRoomId) + " not found.");
         }
@@ -45,7 +46,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void sendMessage(String token, long chatRoomId, String messageText) {
-        final long userId = userAuthenticationService.checkUserLogged(token);
+        final long userId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
         final ChatRoom chatRoom = chatRoomRepository.findOne(chatRoomId);
         if (chatRoom == null) {
             throw new RuntimeException("No chat room with id " + Long.toString(chatRoomId) + " found.");
@@ -58,7 +59,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void sendPrivateMessage(String token, long chatRoomId, String messageText, long receiverUserId) {
-        final long userFromId = userAuthenticationService.checkUserLogged(token);
+        final long userFromId = ServiceFactory.getUserAuthenticationService().checkUserLogged(token);
         final ChatRoom chatRoom = chatRoomRepository.findOne(chatRoomId);
         if (chatRoom == null) {
             throw new RuntimeException("No chat room with id " + Long.toString(chatRoomId) + " found.");

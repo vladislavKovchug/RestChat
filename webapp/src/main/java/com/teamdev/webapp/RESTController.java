@@ -3,9 +3,12 @@ package com.teamdev.webapp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.inject.Inject;
 import com.teamdev.chat.dto.ChatRoomDTO;
 import com.teamdev.chat.dto.MessageDTO;
 import com.teamdev.chat.dto.RegisterUserDTO;
+import com.teamdev.chat.factory.ServiceFactory;
+import com.teamdev.chat.repository.UserRepository;
 import com.teamdev.chat.service.*;
 
 import javax.ws.rs.*;
@@ -20,21 +23,13 @@ import java.util.Locale;
 @Path("/")
 public class RESTController {
 
-    UserAuthenticationService userAuthenticationService = new UserAuthenticationServiceImpl();
-
-    ChatRoomService chatRoomService = new ChatRoomServiceImpl();
-
-    MessageService messageService = new MessageServiceImpl();
-
-    UserManagementService userManagementService = new UserManagementServiceImpl();
-
     @Path("login")
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String login(MultivaluedMap<String, String> formData) {
         String login = formData.get("login").size() > 0 ? formData.get("login").get(0) : "";
         String password = formData.get("password").size() > 0 ? formData.get("password").get(0) : "";
-        String token = userAuthenticationService.login(login, password);
+        String token = ServiceFactory.getUserAuthenticationService().login(login, password);
 
         final JsonObject response = new JsonObject();
         response.addProperty("token", token);
@@ -45,7 +40,7 @@ public class RESTController {
     @GET
     public String getChatRooms(@HeaderParam("Login-token") String token) {
         final Gson gson = new Gson();
-        final Iterable<ChatRoomDTO> chatRooms = chatRoomService.readAllChatRooms(token);
+        final Iterable<ChatRoomDTO> chatRooms = ServiceFactory.getChatRoomService().readAllChatRooms(token);
 
         return gson.toJson(chatRooms);
     }
@@ -55,7 +50,7 @@ public class RESTController {
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public String joinChatRoom(MultivaluedMap<String, String> formData, @HeaderParam("Login-token") String token) {
         final long chatRoomId = Long.parseLong(formData.get("id").size() > 0 ? formData.get("id").get(0) : "-1");
-        chatRoomService.joinChatRoom(token, chatRoomId);
+        ServiceFactory.getChatRoomService().joinChatRoom(token, chatRoomId);
         return "success";
     }
 
@@ -63,7 +58,7 @@ public class RESTController {
     @Path("get-messages/{chatRoom}/{time}")
     public String getMessages(@HeaderParam("Login-token") String token, @PathParam("chatRoom") long chatRoom, @PathParam("time") long time) {
         final Gson gson = new Gson();
-        final Iterable<MessageDTO> chatRoomMessages = messageService.readChatRoomMessages(token, chatRoom, time);
+        final Iterable<MessageDTO> chatRoomMessages = ServiceFactory.getMessageService().readChatRoomMessages(token, chatRoom, time);
 
         return gson.toJson(chatRoomMessages);
     }
@@ -75,7 +70,7 @@ public class RESTController {
         final long chatRoomId = Long.parseLong(formData.get("chatRoomId").size() > 0 ? formData.get("chatRoomId").get(0) : "-1");
         String message = formData.get("message").size() > 0 ? formData.get("message").get(0) : "";
 
-        messageService.sendMessage(token, chatRoomId, message);
+        ServiceFactory.getMessageService().sendMessage(token, chatRoomId, message);
         return "success";
     }
 
@@ -96,7 +91,7 @@ public class RESTController {
 
         }
         final RegisterUserDTO registerUserDTO = new RegisterUserDTO(login, password, age, birthdayDate);
-        userManagementService.register(registerUserDTO);
+        ServiceFactory.getUserManagementService().register(registerUserDTO);
 
         return "success";
     }

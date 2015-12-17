@@ -3,11 +3,11 @@ package com.teamdev.chat.dto;
 import java.util.Date;
 
 public class MessageDTO {
-    final Long fromUserId;
-    final String fromUserName;
-    final String message;
-    final boolean privateMessage;
-    private Date date;
+    public final Long fromUserId;
+    public final String fromUserName;
+    public final String message;
+    public final boolean privateMessage;
+    private final Date date;
 
     public MessageDTO(Long fromUserId, String fromUserName, String message, boolean privateMessage, Date date) {
         this.fromUserId = fromUserId;

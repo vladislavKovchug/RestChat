@@ -4,10 +4,10 @@ import java.util.Date;
 
 
 public class UserProfileDTO {
-    final Long id;
-    final String name;
-    final Long age;
-    private Date birthday;
+    public final Long id;
+    public final String name;
+    public final Long age;
+    private final Date birthday;
 
     public UserProfileDTO(Long id, String name, Long age, Date birthday) {
         this.id = id;

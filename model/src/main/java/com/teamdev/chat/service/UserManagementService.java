@@ -7,4 +7,6 @@ public interface UserManagementService {
 
     void register(RegisterUserDTO registerUserDTO);
 
+    void deleteUser(long userId);
+
 }
