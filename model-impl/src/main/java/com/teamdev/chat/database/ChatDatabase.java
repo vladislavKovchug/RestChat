@@ -13,19 +13,23 @@ import java.util.*;
 public enum ChatDatabase {
     INSTANCE();
 
-    private Map<Tables, List<DatabaseEntity>> database = new HashMap<Tables, List<DatabaseEntity>>();
+    private Map<Tables, List<DatabaseEntity>> database = new HashMap<>();
+    private Map<Tables, Long> databaseIndex = new HashMap<>();
 
     public List<DatabaseEntity> selectTable(Tables table) {
         if(database.containsKey(table)){
             return database.get(table);
         }
-        return new ArrayList<DatabaseEntity>();
+        return new ArrayList<>();
     }
 
     public void insertIntoTable(Tables table, DatabaseEntity line){
+
         if(database.containsKey(table)){
-            line.setId(database.get(table).size() + 1);
+            Long index = databaseIndex.get(table) + 1;
+            line.setId(index);
             database.get(table).add(line);
+            databaseIndex.put(table, index);
         }
     }
 
@@ -62,7 +66,8 @@ public enum ChatDatabase {
         if(database.containsKey(table)){
             throw new RuntimeException("Table " + table.name() + "already exists");
         }
-        database.put(table, new ArrayList<DatabaseEntity>());
+        database.put(table, new ArrayList<>());
+        databaseIndex.put(table, (long) 0);
     }
 
     ChatDatabase() {

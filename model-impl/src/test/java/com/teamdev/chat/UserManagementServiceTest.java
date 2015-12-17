@@ -17,8 +17,8 @@ public class UserManagementServiceTest {
     public void testUserRegister(){
         final RegisterUserDTO newUser = new RegisterUserDTO("new_user", "12345", 12, new Date(1900, 10, 11));
         ServiceFactory.getUserManagementService().register(newUser);
-        final String token = ServiceFactory.getUserAuthenticationService().login(newUser.login, newUser.password);
-        final UserProfileDTO userProfile = ServiceFactory.getUserService().readCurrentUserProfile(token);
+        final String newUserToken = ServiceFactory.getUserAuthenticationService().login(newUser.login, newUser.password);
+        final UserProfileDTO userProfile = ServiceFactory.getUserService().readCurrentUserProfile(newUserToken);
 
         assertEquals("User name changed after register.", newUser.login, userProfile.name);
         assertEquals("User age changed after register.", newUser.age, userProfile.age);

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class UserServiceTest {
-    private RegisterUserDTO registerUserDTO = new RegisterUserDTO("ivan", "123456", 123, new Date(1700, 10, 10));
+    private RegisterUserDTO registerUserDTO = new RegisterUserDTO("not_ivan", "123456", 123, new Date(1700, 10, 10));
     private UserProfileDTO testUser;
     private String testUserToken = "";
 
